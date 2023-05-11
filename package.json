@@ -1,0 +1,23 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "backend on mesto",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlinaLvova/express-mesto-gha.git"
+  },
+  "keywords": [
+    "express",
+    "node.js"
+  ],
+  "author": "Alina Lvova",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlinaLvova/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/AlinaLvova/express-mesto-gha"
+}
