@@ -10,8 +10,6 @@ const cardSchema = new mongoose.Schema({
   link: {  // ссылка на картинку
     required: true,
     type: String,
-    minlength: 2,
-    maxlength: 30,
   },
   owner: { // ссылка на модель автора карточки
     type: mongoose.Schema.Types.ObjectId,
@@ -19,16 +17,13 @@ const cardSchema = new mongoose.Schema({
     required: true
   },
   likes: { //список лайкнувших пост пользователей
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    type: [mongoose.Schema.Types.ObjectId],
     default: []
   },
   createdAt : { // дата создания
-    required: true,
     type: Date,
     default: Date.now
   }
 });
-
 
 module.exports = mongoose.model('card', cardSchema);

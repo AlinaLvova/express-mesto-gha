@@ -15,6 +15,16 @@ app.listen(PORT, () => {
 //middleware для обработки данных в формате JSON
 app.use(express.json());
 
+//middleware временное решение авторизации
+app.use((req, res, next) => {
+  req.user = {
+    _id: '645e72d9f5df792a6c98e5dc'
+  };
+
+  next();
+});
+
+
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
@@ -23,4 +33,5 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   // useFindAndModify: false
 });
 
-app.use('/', require('./routes/users'));
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
