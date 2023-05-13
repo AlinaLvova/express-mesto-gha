@@ -71,11 +71,6 @@ const updateUser = (req, res, updateData) => {
           message: 'Переданы некорректные данные при обновлении пользователя.',
         });
       }
-      // if (err instanceof mongoose.Error.CastError) {
-      //   return res
-      //     .status(NOT_FOUND_ERROR)
-      //     .send({ message: 'Пользователь с указанным _id не найден.' });
-      // }
       return handleErrors(err, res);
     });
 };
