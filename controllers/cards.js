@@ -74,12 +74,12 @@ const updateCardLikes = (req, res, updateQuery) => {
     .populate(populateOptions)
     .then((card) => res.status(SUCCESS_STATUS).send(formatCard(card)))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === "CastError") {
         return res.status(BAD_REQUEST_ERROR).send({
           message: "Переданы некорректные данные для постановки/снятии лайка.",
         });
       }
-      if (err.name === "CastError") {
+      if (err.name === "TypeError") {
         return res
           .status(NOT_FOUND_ERROR)
           .send({ message: "Передан несуществующий _id карточки." });
