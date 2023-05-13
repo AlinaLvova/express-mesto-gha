@@ -4,6 +4,7 @@ const {
   SUCCESS_STATUS,
   BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
+  CREATED_STATUS
 } = require("../utils/constants");
 
 const populateOptions = [
@@ -33,7 +34,7 @@ const formatCard = (card) => ({
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ title: name, link, owner: req.user._id })
-    .then((card) => res.status(SUCCESS_STATUS).send({
+    .then((card) => res.status(CREATED_STATUS).send({
       name: card.title,
       link: card.link,
       _id: card._id

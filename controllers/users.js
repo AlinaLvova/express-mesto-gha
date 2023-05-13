@@ -4,13 +4,14 @@ const {
   SUCCESS_STATUS,
   BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
+  CREATED_STATUS
 } = require("../utils/constants");
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) =>
-      res.status(SUCCESS_STATUS).send({
+      res.status(CREATED_STATUS).send({
         name: user.name,
         about: user.about,
         avatar: user.avatar,
