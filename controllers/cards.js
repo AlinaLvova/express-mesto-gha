@@ -50,7 +50,8 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCardById = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
+  Card.findByIdAndRemove(req.params.cardId)
+    .orFail()
     .then(() => res.status(SUCCESS_STATUS).send({ message: "Пост удалён." }))
     .catch((err) => {
       if (err.name === "CastError") {
@@ -58,7 +59,7 @@ module.exports.deleteCardById = (req, res) => {
           .status(BAD_REQUEST_ERROR)
           .send({ message: "Карточка с указанным _id не найдена." });
       }
-      if (err.name === "TypeError") {
+      if (err.name === "DocumentNotFoundError") {
         return res
           .status(NOT_FOUND_ERROR)
           .send({ message: "Передан несуществующий _id карточки." });
