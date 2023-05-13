@@ -18,6 +18,6 @@ module.exports = {
     'react',
   ],
   rules: {
-    "allow": ["_id"]
+    "allow": ['_id']
   },
 };

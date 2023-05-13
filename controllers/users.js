@@ -40,14 +40,11 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then(user => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      }
       res.send({ data: user });
     })
     .catch(err => {
       if (err.name === 'ValidationError') {
-        return res.status(BAD_REQUEST_ERROR).send({ message: " Переданы некорректные данные при обновлении аватара." });
+        return res.status(BAD_REQUEST_ERROR).send({ message: "Переданы некорректные данные при обновлении аватара." });
       }
       if (err.name === 'CastError') {
         return res.status(NOT_FOUND_ERROR).send({ message: "Пользователь с указанным _id не найден." });
