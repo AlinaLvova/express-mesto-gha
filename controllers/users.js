@@ -44,6 +44,11 @@ module.exports.getUserById = (req, res) => {
           .status(NOT_FOUND_ERROR)
           .send({ message: "Пользователь по указанному _id не найден." });
       }
+      if (err.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND_ERROR).send({
+          message: "Пользователь с таким id не найден",
+        });
+      }
       handleErrors(err, res);
     });
 };
