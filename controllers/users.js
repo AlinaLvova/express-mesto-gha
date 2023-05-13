@@ -18,7 +18,7 @@ const formatUserData = (user) => ({
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  mongoose.Error.create({ name, about, avatar })
+  User.create({ name, about, avatar })
     .then((user) => res.status(CREATED_STATUS).send(formatUserData(user)))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
