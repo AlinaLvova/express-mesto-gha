@@ -1,13 +1,13 @@
-const path = require('path');
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const handleErrors = require('./utils/errors');
+const path = require("path");
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const handleErrors = require("./utils/errors");
 
 // подключаемся к серверу mongo
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
   // useCreateIndex: true,
   // useFindAndModify: false
 });
@@ -24,18 +24,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`)
-})
+  console.log(`App listening on port ${PORT}`);
+});
 
 //middleware временное решение авторизации
 app.use((req, res, next) => {
   req.user = {
-    _id: '645e72d9f5df792a6c98e5dc2'
+    _id: "645e72d9f5df792a6c98e5dc",
   };
-
   next();
 });
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
-
+app.use("/users", require("./routes/users"));
+app.use("/cards", require("./routes/cards"));
