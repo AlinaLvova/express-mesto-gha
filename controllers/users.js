@@ -32,6 +32,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
+    .orFail()
     .then((user) => {
       res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
