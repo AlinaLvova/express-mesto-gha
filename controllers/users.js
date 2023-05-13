@@ -7,16 +7,21 @@ const {
   CREATED_STATUS
 } = require("../utils/constants");
 
+// Формат данных пользователя
+const formatUserData = (user) => {
+  return {
+    name: user.name,
+    about: user.about,
+    avatar: user.avatar,
+    _id: user._id,
+  };
+};
+
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) =>
-      res.status(CREATED_STATUS).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id,
-      })
+      res.status(CREATED_STATUS).send(formatUserData(user))
     )
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -31,12 +36,7 @@ module.exports.createUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
-      res.status(SUCCESS_STATUS).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id,
-      });
+      res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
       if (err.name === "CastError") {
@@ -57,14 +57,7 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
       res.status(SUCCESS_STATUS).send(
-        users.map((user) => {
-          return {
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            _id: user._id,
-          };
-        })
+        users.map((user) => formatUserData(user))
       );
     })
     .catch((err) => handleErrors(err, res));
@@ -78,12 +71,7 @@ module.exports.updateAvatar = (req, res) => {
     { new: true, runValidators: true }
   )
     .then((user) => {
-      res.status(SUCCESS_STATUS).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id,
-      });
+      res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -108,12 +96,7 @@ module.exports.updateProfile = (req, res) => {
     { new: true, runValidators: true }
   )
     .then((user) => {
-      res.status(SUCCESS_STATUS).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id,
-      });
+      res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
