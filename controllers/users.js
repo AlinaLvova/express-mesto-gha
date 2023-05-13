@@ -41,7 +41,7 @@ module.exports.getUserById = (req, res) => {
           .send({ message: 'Пользователь по указанному _id не найден.' });
       }
       if (err.name === 'TypeError') {
-        res.status(NOT_FOUND_ERROR).send({
+        return res.status(NOT_FOUND_ERROR).send({
           message: 'Пользователь с таким id не найден',
         });
       }
@@ -51,11 +51,7 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => {
-      res.status(SUCCESS_STATUS).send(
-        users.map((user) => formatUserData(user)),
-      );
-    })
+    .then((users) => res.status(SUCCESS_STATUS).send(users.map((user) => formatUserData(user))))
     .catch((err) => handleErrors(err, res));
 };
 
