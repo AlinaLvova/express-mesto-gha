@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     type: String
   }
+}, {
+  versionKey: false // Отключение опции versionKey
 });
 
 
