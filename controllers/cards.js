@@ -1,15 +1,15 @@
-const Card = require("../models/card");
-const { handleErrors } = require("../utils/errors");
+const Card = require('../models/card');
+const { handleErrors } = require('../utils/errors');
 const {
   SUCCESS_STATUS,
   BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
-  CREATED_STATUS
-} = require("../utils/constants");
+  CREATED_STATUS,
+} = require('../utils/constants');
 
 const populateOptions = [
-  { path: "likes", select: ["name", "about", "avatar", "_id"] },
-  { path: "owner", select: ["name", "about", "avatar", "_id"] },
+  { path: 'likes', select: ['name', 'about', 'avatar', '_id'] },
+  { path: 'owner', select: ['name', 'about', 'avatar', '_id'] },
 ];
 
 const formatCard = (card) => ({
@@ -37,34 +37,34 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.status(CREATED_STATUS).send({
       name: card.title,
       link: card.link,
-      _id: card._id
-     }))
+      _id: card._id,
+    }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST_ERROR).send({
-          message: "Переданы некорректные данные при создании карточки.",
+          message: 'Переданы некорректные данные при создании карточки.',
         });
       }
-      handleErrors(err, res);
+      return handleErrors(err, res);
     });
 };
 
 module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail()
-    .then(() => res.status(SUCCESS_STATUS).send({ message: "Пост удалён." }))
+    .then(() => res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' }))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res
           .status(BAD_REQUEST_ERROR)
-          .send({ message: "Карточка с указанным _id не найдена." });
+          .send({ message: 'Карточка с указанным _id не найдена.' });
       }
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === 'DocumentNotFoundError') {
         return res
           .status(NOT_FOUND_ERROR)
-          .send({ message: "Передан несуществующий _id карточки." });
+          .send({ message: 'Передан несуществующий _id карточки.' });
       }
-      handleErrors(err, res);
+      return handleErrors(err, res);
     });
 };
 
@@ -80,17 +80,17 @@ const updateCardLikes = (req, res, updateQuery) => {
     .populate(populateOptions)
     .then((card) => res.status(SUCCESS_STATUS).send(formatCard(card)))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res.status(BAD_REQUEST_ERROR).send({
-          message: "Переданы некорректные данные для постановки/снятии лайка.",
+          message: 'Переданы некорректные данные для постановки/снятии лайка.',
         });
       }
-      if (err.name === "TypeError") {
+      if (err.name === 'TypeError') {
         return res
           .status(NOT_FOUND_ERROR)
-          .send({ message: "Передан несуществующий _id карточки." });
+          .send({ message: 'Передан несуществующий _id карточки.' });
       }
-      handleErrors(err, res);
+      return handleErrors(err, res);
     });
 };
 

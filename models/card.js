@@ -7,26 +7,26 @@ const cardSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 30,
   },
-  link: {  // ссылка на картинку
+  link: { // ссылка на картинку
     required: true,
     type: String,
   },
   owner: { // ссылка на модель автора карточки
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: true
+    required: true,
   },
-  likes: { //список лайкнувших пост пользователей
+  likes: { // список лайкнувших пост пользователей
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
-    ref: 'user'
+    ref: 'user',
   },
-  createdAt : { // дата создания
+  createdAt: { // дата создания
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 }, {
-  versionKey: false // Отключение опции versionKey
+  versionKey: false, // Отключение опции versionKey
 });
 
 module.exports = mongoose.model('card', cardSchema);

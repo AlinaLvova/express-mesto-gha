@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     minlength: 2, // минимальная длина имени — 2 символа
     maxlength: 30, // а максимальная — 30 символов
   },
-  about: { //информация о пользователе
+  about: { // информация о пользователе
     required: true,
     type: String,
     minlength: 2,
@@ -15,11 +15,10 @@ const userSchema = new mongoose.Schema({
   },
   avatar: { // ссылка на аватарку
     required: true,
-    type: String
-  }
+    type: String,
+  },
 }, {
-  versionKey: false // Отключение опции versionKey
+  versionKey: false, // Отключение опции versionKey
 });
-
 
 module.exports = mongoose.model('user', userSchema);
