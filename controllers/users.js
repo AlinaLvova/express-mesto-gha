@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 const { handleErrors } = require('../utils/errors');
 const {
@@ -17,10 +18,10 @@ const formatUserData = (user) => ({
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  mongoose.Error.create({ name, about, avatar })
     .then((user) => res.status(CREATED_STATUS).send(formatUserData(user)))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return res.status(BAD_REQUEST_ERROR).send({
           message: 'Переданы некорректные данные при создании пользователя.',
         });
@@ -35,12 +36,12 @@ module.exports.getUserById = (req, res) => {
       res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res
-          .status(BAD_REQUEST_ERROR)
-          .send({ message: 'Пользователь по указанному _id не найден.' });
-      }
-      if (err.name === 'TypeError') {
+      // if (err instanceof mongoose.Error.CastError) {
+      //   return res
+      //     .status(BAD_REQUEST_ERROR)
+      //     .send({ message: 'Пользователь по указанному _id не найден.' });
+      // }
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return res.status(NOT_FOUND_ERROR).send({
           message: 'Пользователь с таким id не найден',
         });
@@ -55,52 +56,35 @@ module.exports.getUsers = (req, res) => {
     .catch((err) => handleErrors(err, res));
 };
 
-module.exports.updateAvatar = (req, res) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-    { new: true, runValidators: true },
-  )
+const updateUser = (req, res, updateData) => {
+  User.findByIdAndUpdate(req.user._id, updateData, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => {
       res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return res.status(BAD_REQUEST_ERROR).send({
-          message: 'Переданы некорректные данные при обновлении аватара.',
+          message: 'Переданы некорректные данные при обновлении пользователя.',
         });
       }
-      if (err.name === 'CastError') {
-        return res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: 'Пользователь с указанным _id не найден.' });
-      }
+      // if (err instanceof mongoose.Error.CastError) {
+      //   return res
+      //     .status(NOT_FOUND_ERROR)
+      //     .send({ message: 'Пользователь с указанным _id не найден.' });
+      // }
       return handleErrors(err, res);
     });
 };
 
+module.exports.updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  updateUser(req, res, { avatar });
+};
+
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name, about },
-    { new: true, runValidators: true },
-  )
-    .then((user) => {
-      res.status(SUCCESS_STATUS).send(formatUserData(user));
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(BAD_REQUEST_ERROR).send({
-          message: 'Переданы некорректные данные при обновлении профиля.',
-        });
-      }
-      if (err.name === 'CastError') {
-        return res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: 'Пользователь с указанным _id не найден.' });
-      }
-      return handleErrors(err, res);
-    });
+  updateUser(req, res, { name, about });
 };

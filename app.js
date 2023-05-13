@@ -1,7 +1,6 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const {
   NOT_FOUND_ERROR,
 } = require('./utils/constants');
@@ -24,8 +23,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // middleware для обработки данных в формате JSON
 app.use(express.json());
-// для приёма веб-страниц внутри POST-запроса
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // middleware временное решение авторизации
 app.use((req, res, next) => {
@@ -35,8 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use(require('./routes/index'));
 
 // Middleware для обработки несуществующих путей
 app.use((req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Page Not Found' }));
