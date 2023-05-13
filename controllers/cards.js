@@ -58,6 +58,11 @@ module.exports.deleteCardById = (req, res) => {
           .status(BAD_REQUEST_ERROR)
           .send({ message: "Карточка с указанным _id не найдена." });
       }
+      if (err.name === "TypeError") {
+        return res
+          .status(NOT_FOUND_ERROR)
+          .send({ message: "Передан несуществующий _id карточки." });
+      }
       handleErrors(err, res);
     });
 };
