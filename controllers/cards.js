@@ -79,6 +79,7 @@ module.exports.getCards = (req, res) => {
 const updateCardLikes = (req, res, updateQuery) => {
   Card.findByIdAndUpdate(req.params.cardId, updateQuery, { new: true })
     .populate(populateOptions)
+    .orFail()
     .then((card) => res.status(SUCCESS_STATUS).send(formatCard(card)))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
