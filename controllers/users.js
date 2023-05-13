@@ -36,11 +36,11 @@ module.exports.getUserById = (req, res) => {
       res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
-      // if (err instanceof mongoose.Error.CastError) {
-      //   return res
-      //     .status(BAD_REQUEST_ERROR)
-      //     .send({ message: 'Пользователь по указанному _id не найден.' });
-      // }
+      if (err instanceof mongoose.Error.CastError) {
+        return res
+          .status(BAD_REQUEST_ERROR)
+          .send({ message: 'Пользователь по указанному _id не найден.' });
+      }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return res.status(NOT_FOUND_ERROR).send({
           message: 'Пользователь с таким id не найден',
