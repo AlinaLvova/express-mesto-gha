@@ -41,10 +41,10 @@ module.exports.getUserById = (req, res) => {
     .catch((err) => {
       if (err.name === "CastError") {
         return res
-          .status(NOT_FOUND_ERROR)
+          .status(BAD_REQUEST_ERROR)
           .send({ message: "Пользователь по указанному _id не найден." });
       }
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === "TypeError") {
         res.status(NOT_FOUND_ERROR).send({
           message: "Пользователь с таким id не найден",
         });
