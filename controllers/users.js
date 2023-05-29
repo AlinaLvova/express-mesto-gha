@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { handleErrors } = require('../utils/errors');
 const {
@@ -6,6 +7,10 @@ const {
   BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
   CREATED_STATUS,
+  CONFLICT_ERROR,
+  DEFAULT_NAME,
+  DEFAULT_AVATAR,
+  DEFAULT_ABOUT,
 } = require('../utils/constants');
 
 // Формат данных пользователя
@@ -14,20 +19,36 @@ const formatUserData = (user) => ({
   about: user.about,
   avatar: user.avatar,
   _id: user._id,
+  email: user.email,
 });
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(CREATED_STATUS).send(formatUserData(user)))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(BAD_REQUEST_ERROR).send({
-          message: 'Переданы некорректные данные при создании пользователя.',
-        });
-      }
-      return handleErrors(err, res);
-    });
+  const {
+    name = DEFAULT_NAME,
+    about = DEFAULT_ABOUT,
+    avatar = DEFAULT_AVATAR,
+    email, password,
+  } = req.body;
+
+  bcrypt.hash(password, 10).then((hash) => {
+    User.create({
+      name, about, avatar, email, password: hash,
+    })
+      .then((user) => res.status(CREATED_STATUS).send(user.toJSON()))
+      .catch((err) => {
+        if (err instanceof mongoose.Error.ValidationError) {
+          return res.status(BAD_REQUEST_ERROR).send({
+            message: 'Переданы некорректные данные при создании пользователя.',
+          });
+        }
+        if (err.code === 11000) {
+          return res.status(CONFLICT_ERROR).send({
+            message: 'Пользователь с таким email уже зарегистрирован',
+          });
+        }
+        return handleErrors(err, res);
+      });
+  });
 };
 
 module.exports.getUserById = (req, res) => {

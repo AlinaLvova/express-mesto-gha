@@ -16,16 +16,16 @@ const userSchema = new mongoose.Schema({
   },
   avatar: { // ссылка на аватарку
     required: true,
-    unique: true,
+    type: String,
+  },
+  email: {
+    required: true,
     type: String,
     validate: {
       validator: (email) => validator.isEmail(email),
       message: 'Некорректный e-mail',
     },
-  },
-  email: {
-    required: true,
-    type: String,
+    unique: true,
   },
   password: {
     required: true,
@@ -34,5 +34,15 @@ const userSchema = new mongoose.Schema({
 }, {
   versionKey: false, // Отключение опции versionKey
 });
+
+userSchema.index({ email: 1 }, { unique: true });
+
+userSchema.methods.toJSON = function () {
+  const data = this.toObject();
+  delete data.email;
+  delete data.password;
+  delete data.__v;
+  return data;
+};
 
 module.exports = mongoose.model('user', userSchema);

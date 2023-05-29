@@ -13,7 +13,7 @@ module.exports = {
   plugins: [
   ],
   rules: {
-    'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    'no-underscore-dangle': ['error', { allow: ['_id', '__v'] }],
     'linebreak-style': 'off',
   },
 };
