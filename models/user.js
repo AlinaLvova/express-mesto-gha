@@ -39,7 +39,6 @@ userSchema.index({ email: 1 }, { unique: true });
 
 userSchema.methods.toJSON = function () {
   const data = this.toObject();
-  delete data.email;
   delete data.password;
   delete data.__v;
   return data;

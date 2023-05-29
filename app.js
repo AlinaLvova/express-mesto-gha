@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const {
   NOT_FOUND_ERROR,
@@ -23,6 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // middleware для обработки данных в формате JSON
 app.use(express.json());
+
+app.use(cookieParser());
 
 // middleware временное решение авторизации
 app.use((req, res, next) => {

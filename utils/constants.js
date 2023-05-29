@@ -10,6 +10,8 @@ const SUCCESS_STATUS = 200;
 const CREATED_STATUS = 201;
 // Conflict error
 const CONFLICT_ERROR = 409;
+// Unauthorized
+const UNAUTHORIZED_ERROR = 401;
 
 const DEFAULT_NAME = 'Жак-Ив Кусто';
 const DEFAULT_AVATAR = 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png';
@@ -25,4 +27,5 @@ module.exports = {
   DEFAULT_NAME,
   DEFAULT_AVATAR,
   DEFAULT_ABOUT,
+  UNAUTHORIZED_ERROR,
 };

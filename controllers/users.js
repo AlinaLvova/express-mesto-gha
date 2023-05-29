@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
 const { handleErrors } = require('../utils/errors');
 const {
@@ -11,16 +13,18 @@ const {
   DEFAULT_NAME,
   DEFAULT_AVATAR,
   DEFAULT_ABOUT,
+  UNAUTHORIZED_ERROR,
 } = require('../utils/constants');
+const config = require('../config');
 
 // Формат данных пользователя
-const formatUserData = (user) => ({
-  name: user.name,
-  about: user.about,
-  avatar: user.avatar,
-  _id: user._id,
-  email: user.email,
-});
+// const formatUserData = (user) => ({
+//   name: user.name,
+//   about: user.about,
+//   avatar: user.avatar,
+//   _id: user._id,
+//   email: user.email,
+// });
 
 module.exports.createUser = (req, res) => {
   const {
@@ -55,7 +59,7 @@ module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => {
-      res.status(SUCCESS_STATUS).send(formatUserData(user));
+      res.status(SUCCESS_STATUS).send(user.toJSON());
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -74,7 +78,7 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(SUCCESS_STATUS).send(users.map((user) => formatUserData(user))))
+    .then((users) => res.status(SUCCESS_STATUS).send(users.map((user) => user.toJSON())))
     .catch((err) => handleErrors(err, res));
 };
 
@@ -84,7 +88,7 @@ const updateUser = (req, res, updateData) => {
     runValidators: true,
   })
     .then((user) => {
-      res.status(SUCCESS_STATUS).send(formatUserData(user));
+      res.status(SUCCESS_STATUS).send(user.toJSON());
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -104,4 +108,32 @@ module.exports.updateAvatar = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
   updateUser(req, res, { name, about });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  let emailError = false;
+  User.findOne({ email })
+    .orFail()
+    .then((user) => bcrypt.compare(password, user.password).then((match) => {
+      if (match) {
+        const token = jwt.sign({ _id: user._id }, config.jwtSecretKey, { expiresIn: '7d' });
+        // Устанавливаем httpOnly куку
+        res.cookie('jwtToken', token, {
+          maxAge: 3600,
+          httpOnly: true,
+        });
+        return res.send(token);
+      }
+      emailError = true;
+      throw new Error();
+    }))
+    .catch((err) => {
+      if (err instanceof mongoose.Error.DocumentNotFoundError || emailError) {
+        return res.status(UNAUTHORIZED_ERROR).send({
+          message: 'Переданы неверные email или пароль',
+        });
+      }
+      return handleErrors(err, res);
+    });
 };
