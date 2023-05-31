@@ -6,6 +6,11 @@ const {
   NOT_FOUND_ERROR,
 } = require('./utils/constants');
 const { errors } = require('./middlewares/errors');
+const auth = require('./middlewares/auth');
+const {
+  createUser, login,
+} = require('./controllers/users');
+
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
@@ -27,6 +32,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.use(cookieParser());
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
 
 app.use(require('./routes/index'));
 
