@@ -1,4 +1,4 @@
-const INTERNAL_SERVER_ERROR = require('./constants'); // Default error.
+const { INTERNAL_SERVER_ERROR } = require('./constants'); // Default error.
 
 // Функция для обработки ошибок
 const handleErrors = (err, res) => {

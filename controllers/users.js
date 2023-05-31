@@ -26,7 +26,7 @@ const config = require('../config');
 //   email: user.email,
 // });
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name = DEFAULT_NAME,
     about = DEFAULT_ABOUT,
@@ -51,7 +51,8 @@ module.exports.createUser = (req, res) => {
           });
         }
         return handleErrors(err, res);
-      });
+      })
+      .catch(next);
   });
 };
 
@@ -79,6 +80,12 @@ module.exports.getUserById = (req, res) => {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(SUCCESS_STATUS).send(users.map((user) => user.toJSON())))
+    .catch((err) => handleErrors(err, res));
+};
+
+module.exports.getMe = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => res.status(SUCCESS_STATUS).send(user.toJSON()))
     .catch((err) => handleErrors(err, res));
 };
 
@@ -110,7 +117,7 @@ module.exports.updateProfile = (req, res) => {
   updateUser(req, res, { name, about });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   let emailError = false;
   User.findOne({ email })
