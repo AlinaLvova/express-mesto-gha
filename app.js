@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const {
   NOT_FOUND_ERROR,
 } = require('./utils/constants');
+const { errors } = require('./middlewares/errors');
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
@@ -29,12 +30,10 @@ app.use(cookieParser());
 
 app.use(require('./routes/index'));
 
+app.use(errors);
+
 // Middleware для обработки несуществующих путей
 app.use((req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Page Not Found' }));
-
-// app.use((error, req, res) => {
-//   res.send({ message: error.message });
-// });
 
 app.listen(PORT, () => {
 });

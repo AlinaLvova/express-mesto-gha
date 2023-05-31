@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const { handleErrors } = require('../utils/errors');
 const {
   SUCCESS_STATUS,
   BAD_REQUEST_ERROR,
@@ -50,13 +49,13 @@ module.exports.createUser = (req, res, next) => {
             message: 'Пользователь с таким email уже зарегистрирован',
           });
         }
-        return handleErrors(err, res);
+        return next(err);
       })
       .catch(next);
   });
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => {
@@ -64,32 +63,34 @@ module.exports.getUserById = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res
-          .status(BAD_REQUEST_ERROR)
-          .send({ message: 'Пользователь по указанному _id не найден.' });
-      }
-      if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return res.status(NOT_FOUND_ERROR).send({
+        next({
+          statusCode: BAD_REQUEST_ERROR,
+          message: 'Пользователь по указанному _id не найден.',
+        });
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next({
+          statusCode: NOT_FOUND_ERROR,
           message: 'Пользователь с таким id не найден',
         });
+      } else {
+        next(err);
       }
-      return handleErrors(err, res);
     });
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(SUCCESS_STATUS).send(users.map((user) => user.toJSON())))
-    .catch((err) => handleErrors(err, res));
+    .catch((err) => next(err));
 };
 
-module.exports.getMe = (req, res) => {
+module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.status(SUCCESS_STATUS).send(user.toJSON()))
-    .catch((err) => handleErrors(err, res));
+    .catch((err) => next(err));
 };
 
-const updateUser = (req, res, updateData) => {
+const updateUser = (req, res, updateData, next) => {
   User.findByIdAndUpdate(req.user._id, updateData, {
     new: true,
     runValidators: true,
@@ -99,11 +100,12 @@ const updateUser = (req, res, updateData) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(BAD_REQUEST_ERROR).send({
+        next({
+          statusCode: BAD_REQUEST_ERROR,
           message: 'Переданы некорректные данные при обновлении пользователя.',
         });
       }
-      return handleErrors(err, res);
+      return next(err);
     });
 };
 
@@ -117,7 +119,7 @@ module.exports.updateProfile = (req, res) => {
   updateUser(req, res, { name, about });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   let emailError = false;
   User.findOne({ email })
@@ -137,10 +139,11 @@ module.exports.login = (req, res) => {
     }))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError || emailError) {
-        return res.status(UNAUTHORIZED_ERROR).send({
+        next({
+          statusCode: UNAUTHORIZED_ERROR,
           message: 'Переданы неверные email или пароль',
         });
       }
-      return handleErrors(err, res);
+      return next(err);
     });
 };
