@@ -40,10 +40,10 @@ app.use(auth);
 
 app.use(require('./routes/index'));
 
-app.use(errors);
-
 // Middleware для обработки несуществующих путей
 app.use((req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Page Not Found' }));
+
+app.use(errors);
 
 app.listen(PORT, () => {
 });
