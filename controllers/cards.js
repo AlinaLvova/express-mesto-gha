@@ -6,6 +6,7 @@ const {
   BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
   CREATED_STATUS,
+  UNAUTHORIZED_ERROR,
 } = require('../utils/constants');
 
 const populateOptions = [
@@ -51,9 +52,15 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const userId = req.user._id;
+  Card.findById(req.params.cardId)
     .orFail()
-    .then(() => res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' }))
+    .then((card) => {
+      if (card.owner._id !== userId) {
+        throw new mongoose.Error('Нет прав для удаления карточки с указанным _id');
+      }
+      return res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' });
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         return res
@@ -64,6 +71,11 @@ module.exports.deleteCardById = (req, res) => {
         return res
           .status(NOT_FOUND_ERROR)
           .send({ message: 'Передан несуществующий _id карточки.' });
+      }
+      if (err instanceof mongoose.Error) {
+        return res
+          .status(UNAUTHORIZED_ERROR)
+          .send({ message: err.message });
       }
       return handleErrors(err, res);
     });

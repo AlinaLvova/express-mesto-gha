@@ -5,10 +5,6 @@ const mongoose = require('mongoose');
 const {
   NOT_FOUND_ERROR,
 } = require('./utils/constants');
-const auth = require('./middlewares/auth');
-const {
-  createUser, login,
-} = require('./controllers/users');
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
@@ -30,20 +26,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.use(cookieParser());
-
-// middleware временное решение авторизации
-// app.use(auth);
-//   (req, res, next) => {
-//   req.user = {
-//     _id: '645e72d9f5df792a6c98e5dc',
-//   };
-//   next();
-// });
-
-app.post('/signin', login);
-app.post('/signup', createUser);
-
-app.use(auth);
 
 app.use(require('./routes/index'));
 

@@ -117,7 +117,7 @@ module.exports.updateProfile = (req, res) => {
   updateUser(req, res, { name, about });
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
   let emailError = false;
   User.findOne({ email })
