@@ -132,7 +132,7 @@ module.exports.login = (req, res, next) => {
           maxAge: 3600,
           httpOnly: true,
         });
-        return res.send(token);
+        return res.send({jwtToken: token});
       }
       emailError = true;
       throw new Error();
