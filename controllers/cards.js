@@ -113,12 +113,12 @@ const updateCardLikes = (req, res, updateQuery, next) => {
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   const updateQuery = { $addToSet: { likes: req.user._id } };
-  updateCardLikes(req, res, updateQuery);
+  updateCardLikes(req, res, updateQuery, next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   const updateQuery = { $pull: { likes: req.user._id } };
-  updateCardLikes(req, res, updateQuery);
+  updateCardLikes(req, res, updateQuery, next);
 };
