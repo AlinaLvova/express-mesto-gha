@@ -43,7 +43,7 @@ app.use(require('./routes/index'));
 // Middleware для обработки несуществующих путей
 app.use((req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Page Not Found' }));
 
-app.use(errors);
+// app.use(errors);
 
 app.listen(PORT, () => {
 });
