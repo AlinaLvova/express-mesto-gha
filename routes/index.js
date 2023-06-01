@@ -8,7 +8,7 @@ const {
   loginValidator,
   signupValidator,
 } = require('../middlewares/validation');
-const { NotFoundError } = require('../errors/notFoundError');
+const NotFoundError = require('../errors/notFoundError');
 
 const router = express.Router();
 
