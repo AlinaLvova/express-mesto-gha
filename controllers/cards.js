@@ -94,22 +94,26 @@ module.exports.getCards = (req, res, next) => {
 const updateCardLikes = (req, res, updateQuery, next) => {
   Card.findByIdAndUpdate(req.params.cardId, updateQuery, { new: true })
     .populate(populateOptions)
-    .orFail()
-    .then((card) => res.status(SUCCESS_STATUS).send(formatCard(card)))
+    .then((card) => {
+      if (!card) {
+        throw new mongoose.Error.DocumentNotFoundError();
+      }
+      res.status(SUCCESS_STATUS).send(formatCard(card));
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next({
           statusCode: BAD_REQUEST_ERROR,
           message: 'Переданы некорректные данные для постановки/снятии лайка.',
         });
-      }
-      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next({
           statusCode: NOT_FOUND_ERROR,
           message: 'Передан несуществующий _id карточки.',
         });
+      } else {
+        next(err);
       }
-      return next(err);
     });
 };
 
