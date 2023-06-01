@@ -42,7 +42,7 @@ module.exports.createCard = (req, res, next) => {
     }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
       return next(err);
     });
@@ -63,10 +63,10 @@ module.exports.deleteCardById = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new BadRequestError('Карточка с указанным _id не найдена.');
+        return next(new BadRequestError('Карточка с указанным _id не найдена.'));
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        throw new NotFoundError('Передан несуществующий _id карточки.');
+        return next(new NotFoundError('Передан несуществующий _id карточки.'));
       }
       return next(err);
     });
@@ -90,7 +90,7 @@ const updateCardLikes = (req, res, updateQuery, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.');
+        return next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
       }
       return next(err);
     });

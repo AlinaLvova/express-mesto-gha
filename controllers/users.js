@@ -40,10 +40,10 @@ module.exports.createUser = (req, res, next) => {
       .then((user) => res.status(CREATED_STATUS).send(user.toJSON()))
       .catch((err) => {
         if (err instanceof mongoose.Error.ValidationError) {
-          throw new BadRequestError('Переданы некорректные данные при создании пользователя.');
+          return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
         }
         if (err.code === 11000) {
-          throw new ConflictError('Пользователь с таким email уже зарегистрирован');
+          return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
         }
         return next(err);
       })
@@ -59,10 +59,10 @@ module.exports.getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new BadRequestError('Пользователь по указанному _id не найден.');
+        return next(new BadRequestError('Пользователь по указанному _id не найден.'));
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        throw new NotFoundError('Пользователь с таким id не найден');
+        return next(new NotFoundError('Пользователь с таким id не найден'));
       }
       return next(err);
     });
@@ -90,7 +90,7 @@ const updateUser = (req, res, updateData, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequestError('Переданы некорректные данные при обновлении пользователя.');
+        return next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
       }
       return next(err);
     });
@@ -108,13 +108,14 @@ module.exports.updateProfile = (req, res) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  let emailError = false;
   User.findOne({ email })
     .select('+password')
     .orFail()
     .then((user) => bcrypt.compare(password, user.password).then((match) => {
       if (match) {
-        const token = jwt.sign({ _id: user._id }, config.jwtSecretKey, { expiresIn: '7d' });
+        const token = jwt.sign({ _id: user._id }, config.jwtSecretKey, {
+          expiresIn: '7d',
+        });
         // Устанавливаем httpOnly куку
         res.cookie('jwtToken', token, {
           maxAge: 3600,
@@ -122,12 +123,11 @@ module.exports.login = (req, res, next) => {
         });
         return res.send({ jwtToken: token });
       }
-      emailError = true;
       throw new UnauthorizedError('Переданы неверные email или пароль');
     }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.DocumentNotFoundError || emailError) {
-        throw new UnauthorizedError('Переданы неверные email или пароль');
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        return next(new NotFoundError('Переданы неверные email или пароль'));
       }
       return next(err);
     });
