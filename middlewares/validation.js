@@ -20,8 +20,7 @@ const signupValidator = celebrate({
 
 const getUserByIdValidator = celebrate({
   [Segments.BODY]:{
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(2),
+    userId: Joi.string().required().hex().length(24),
   }
 })
 
