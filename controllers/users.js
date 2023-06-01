@@ -37,7 +37,7 @@ module.exports.createUser = (req, res, next) => {
     User.create({
       name, about, avatar, email, password: hash,
     })
-      .then((user) => res.status(CREATED_STATUS).send(user.toJSON()))
+      .then((user) => res.status(CREATED_STATUS).send({ jwt: user.toJSON() }))
       .catch((err) => {
         if (err instanceof mongoose.Error.ValidationError) {
           return res.status(BAD_REQUEST_ERROR).send({
