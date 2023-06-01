@@ -128,7 +128,7 @@ module.exports.login = (req, res, next) => {
     }))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return next(new NotFoundError('Переданы неверные email или пароль'));
+        return next(new UnauthorizedError('Переданы неверные email или пароль'));
       }
       return next(err);
     });
