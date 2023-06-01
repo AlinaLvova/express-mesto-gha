@@ -6,6 +6,7 @@ const {
   NOT_FOUND_ERROR,
   CREATED_STATUS,
   UNAUTHORIZED_ERROR,
+  FORBIDDEN_ERROR,
 } = require('../utils/constants');
 
 const populateOptions = [
@@ -56,7 +57,7 @@ module.exports.deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
     .orFail()
     .then((card) => {
-      if (card.owner._id !== userId) {
+      if (card.owner._id.toString() !== userId) {
         throw new mongoose.Error('Нет прав для удаления карточки с указанным _id');
       }
       return res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' });
@@ -76,7 +77,7 @@ module.exports.deleteCardById = (req, res, next) => {
       }
       if (err instanceof mongoose.Error) {
         next({
-          statusCode: UNAUTHORIZED_ERROR,
+          statusCode: FORBIDDEN_ERROR,
           message: err.message,
         });
       }
