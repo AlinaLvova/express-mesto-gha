@@ -45,7 +45,7 @@ const createCardValidator = celebrate({
 });
 
 const inputIdCardValidator = celebrate({
-  [Segments.BODY]:{
+  [Segments.PARAMS]:{
     cardId: Joi.string().required().hex().length(24),
   },
 });
