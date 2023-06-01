@@ -4,9 +4,9 @@ const {
   SUCCESS_STATUS,
   CREATED_STATUS,
 } = require('../utils/constants');
-const { BadRequestError } = require('../errors/badRequestError');
-const { NotFoundError } = require('../errors/notFoundError');
-const { ForbiddenError } = require('../errors/forbiddenError');
+const BadRequestError = require('../errors/badRequestError');
+const NotFoundError = require('../errors/notFoundError');
+const ForbiddenError = require('../errors/forbiddenError');
 
 const populateOptions = [
   { path: 'likes', select: ['name', 'about', 'avatar', '_id'] },

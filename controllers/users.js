@@ -11,10 +11,10 @@ const {
   DEFAULT_ABOUT,
 } = require('../utils/constants');
 const config = require('../utils/config');
-const { BadRequestError } = require('../errors/badRequestError');
-const { ConflictError } = require('../errors/conflictError');
-const { NotFoundError } = require('../errors/notFoundError');
-const { UnauthorizedError } = require('../errors/unauthorizedError');
+const BadRequestError = require('../errors/badRequestError');
+const ConflictError = require('../errors/conflictError');
+const NotFoundError = require('../errors/notFoundError');
+const UnauthorizedError = require('../errors/unauthorizedError');
 
 // Формат данных пользователя
 // const formatUserData = (user) => ({
