@@ -67,14 +67,14 @@ module.exports.getUserById = (req, res, next) => {
           statusCode: BAD_REQUEST_ERROR,
           message: 'Пользователь по указанному _id не найден.',
         });
-      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      }
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next({
           statusCode: NOT_FOUND_ERROR,
           message: 'Пользователь с таким id не найден',
         });
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
 

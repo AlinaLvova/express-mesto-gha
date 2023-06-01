@@ -80,7 +80,7 @@ module.exports.deleteCardById = (req, res, next) => {
           message: err.message,
         });
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -102,14 +102,14 @@ const updateCardLikes = (req, res, updateQuery, next) => {
           statusCode: BAD_REQUEST_ERROR,
           message: 'Переданы некорректные данные для постановки/снятии лайка.',
         });
-      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      }
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next({
           statusCode: NOT_FOUND_ERROR,
           message: 'Передан несуществующий _id карточки.',
         });
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
 
