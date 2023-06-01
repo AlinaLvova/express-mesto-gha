@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const {
   NOT_FOUND_ERROR,
 } = require('./utils/constants');
-const { errors } = require('./middlewares/errors');
+const errors = require('./middlewares/errors');
 const auth = require('./middlewares/auth');
 const {
   createUser, login,
@@ -43,7 +43,7 @@ app.use(require('./routes/index'));
 // Middleware для обработки несуществующих путей
 app.use((req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Page Not Found' }));
 
-// app.use(errors);
+app.use(errors);
 
 app.listen(PORT, () => {
 });
