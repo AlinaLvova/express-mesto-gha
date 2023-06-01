@@ -45,8 +45,13 @@ const createCardValidator = celebrate({
 });
 
 const inputIdCardValidator = celebrate({
-  [Segments.PARAMS]:{
-    cardId: Joi.string().required().hex().length(24),
+  [Segments.PARAMS]: {
+    cardId: Joi.string().required().custom((value, helpers) => {
+      if (!isValidObjectId(value)) {
+        return helpers.error('any.invalid');
+      }
+      return value;
+    }),
   },
 });
 
