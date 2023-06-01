@@ -60,7 +60,10 @@ module.exports.deleteCardById = (req, res, next) => {
       if (card.owner._id.toString() !== userId) {
         throw new mongoose.Error('Нет прав для удаления карточки с указанным _id');
       }
-      return res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' });
+      Card.deleteOne({ _id: req.params.cardId })
+      .then(() => {
+        res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' });
+      });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
