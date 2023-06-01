@@ -19,7 +19,7 @@ const signupValidator = celebrate({
 })
 
 const getUserByIdValidator = celebrate({
-  [Segments.BODY]:{
+  [Segments.PARAMS]:{
     userId: Joi.string().required().hex().length(24),
   }
 })
