@@ -2,9 +2,6 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
-const {
-  NOT_FOUND_ERROR,
-} = require('./utils/constants');
 const errors = require('./middlewares/errors');
 
 // подключаемся к серверу mongo
@@ -29,9 +26,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(require('./routes/index'));
-
-// Middleware для обработки несуществующих путей
-app.use((req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Page Not Found' }));
 
 app.use(errors);
 

@@ -7,7 +7,7 @@ const {
   getUserByIdValidator,
   updateProfileValidator,
   updateAvatarValidator,
-} = require("../middlewares/validation");
+} = require('../middlewares/validation');
 
 router.get('/', getUsers);
 router.get('/me', getMe);

@@ -2,12 +2,11 @@ const mongoose = require('mongoose');
 const Card = require('../models/card');
 const {
   SUCCESS_STATUS,
-  BAD_REQUEST_ERROR,
-  NOT_FOUND_ERROR,
   CREATED_STATUS,
-  UNAUTHORIZED_ERROR,
-  FORBIDDEN_ERROR,
 } = require('../utils/constants');
+const { BadRequestError } = require('../errors/badRequestError');
+const { NotFoundError } = require('../errors/notFoundError');
+const { ForbiddenError } = require('../errors/forbiddenError');
 
 const populateOptions = [
   { path: 'likes', select: ['name', 'about', 'avatar', '_id'] },
@@ -43,10 +42,7 @@ module.exports.createCard = (req, res, next) => {
     }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next({
-          statusCode: BAD_REQUEST_ERROR,
-          message: 'Переданы некорректные данные при создании карточки.',
-        });
+        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
       }
       return next(err);
     });
@@ -58,31 +54,19 @@ module.exports.deleteCardById = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (card.owner._id.toString() !== userId) {
-        throw new mongoose.Error('Нет прав для удаления карточки с указанным _id');
+        throw new ForbiddenError('Нет прав для удаления карточки с указанным _id');
       }
       Card.deleteOne({ _id: req.params.cardId })
-      .then(() => {
-        res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' });
-      });
+        .then(() => {
+          res.status(SUCCESS_STATUS).send({ message: 'Пост удалён.' });
+        });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next({
-          statusCode: BAD_REQUEST_ERROR,
-          message: 'Карточка с указанным _id не найдена.',
-        });
+        throw new BadRequestError('Карточка с указанным _id не найдена.');
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next({
-          statusCode: NOT_FOUND_ERROR,
-          message: 'Передан несуществующий _id карточки.',
-        });
-      }
-      if (err instanceof mongoose.Error) {
-        next({
-          statusCode: FORBIDDEN_ERROR,
-          message: err.message,
-        });
+        throw new NotFoundError('Передан несуществующий _id карточки.');
       }
       return next(err);
     });
@@ -100,24 +84,15 @@ const updateCardLikes = (req, res, updateQuery, next) => {
     .populate(populateOptions)
     .then((card) => {
       if (!card) {
-        throw new mongoose.Error.DocumentNotFoundError();
+        throw new NotFoundError('Передан несуществующий _id карточки.');
       }
       res.status(SUCCESS_STATUS).send(formatCard(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next({
-          statusCode: BAD_REQUEST_ERROR,
-          message: 'Переданы некорректные данные для постановки/снятии лайка.',
-        });
-      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next({
-          statusCode: NOT_FOUND_ERROR,
-          message: 'Передан несуществующий _id карточки.',
-        });
-      } else {
-        next(err);
+        throw new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.');
       }
+      return next(err);
     });
 };
 

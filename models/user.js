@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
   password: {
     required: true,
     type: String,
+    select: false,
   },
 }, {
   versionKey: false, // Отключение опции versionKey
@@ -37,10 +38,8 @@ const userSchema = new mongoose.Schema({
 
 userSchema.index({ email: 1 }, { unique: true });
 
-userSchema.methods.toJSON = function () {
+userSchema.methods.toJSON = () => {
   const data = this.toObject();
-  delete data.password;
-  delete data.__v;
   return data;
 };
 

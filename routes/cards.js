@@ -6,7 +6,7 @@ const {
 const {
   createCardValidator,
   inputIdCardValidator,
-} = require("../middlewares/validation");
+} = require('../middlewares/validation');
 
 router.post('/', createCardValidator, createCard);
 router.get('/', getCards);
