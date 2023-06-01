@@ -17,27 +17,28 @@ const NotFoundError = require('../errors/notFoundError');
 const UnauthorizedError = require('../errors/unauthorizedError');
 
 // Формат данных пользователя
-// const formatUserData = (user) => ({
-//   name: user.name,
-//   about: user.about,
-//   avatar: user.avatar,
-//   _id: user._id,
-//   email: user.email,
-// });
+const formatUserData = (user) => ({
+  name: user.name,
+  about: user.about,
+  avatar: user.avatar,
+  _id: user._id,
+  email: user.email,
+});
 
 module.exports.createUser = (req, res, next) => {
   const {
     name = DEFAULT_NAME,
     about = DEFAULT_ABOUT,
     avatar = DEFAULT_AVATAR,
-    email, password,
+    email,
+    password,
   } = req.body;
 
   bcrypt.hash(password, 10).then((hash) => {
     User.create({
       name, about, avatar, email, password: hash,
     })
-      .then((user) => res.status(CREATED_STATUS).send(user.toJSON()))
+      .then((user) => res.status(CREATED_STATUS).send(formatUserData(user)))
       .catch((err) => {
         if (err instanceof mongoose.Error.ValidationError) {
           return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
@@ -55,7 +56,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => {
-      res.status(SUCCESS_STATUS).send(user.toJSON());
+      res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -70,13 +71,13 @@ module.exports.getUserById = (req, res, next) => {
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(SUCCESS_STATUS).send(users.map((user) => user.toJSON())))
+    .then((users) => res.status(SUCCESS_STATUS).send(users.map((user) => formatUserData(user))))
     .catch((err) => next(err));
 };
 
 module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.status(SUCCESS_STATUS).send(user.toJSON()))
+    .then((user) => res.status(SUCCESS_STATUS).send(formatUserData(user)))
     .catch((err) => next(err));
 };
 
@@ -86,7 +87,7 @@ const updateUser = (req, res, updateData, next) => {
     runValidators: true,
   })
     .then((user) => {
-      res.status(SUCCESS_STATUS).send(user.toJSON());
+      res.status(SUCCESS_STATUS).send(formatUserData(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
