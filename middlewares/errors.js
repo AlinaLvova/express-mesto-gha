@@ -1,5 +1,5 @@
 const { isCelebrateError } = require("celebrate");
-const { INTERNAL_SERVER_ERROR, BAD_REQUEST_ERROR } = fixrequire("../utils/constants");
+const { INTERNAL_SERVER_ERROR, BAD_REQUEST_ERROR } = require("../utils/constants");
 module.exports = (error, req, res, next) => {
   if (isCelebrateError(error)) {
     return res.status(BAD_REQUEST_ERROR).send('Ошибка валидации.');
